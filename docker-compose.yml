@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  ubuntu_apache_php:
+    image: uapp:latest
+    ports:
+      - 3080:80
+    volumes:
+      - ./uapp:/var/www/html/
+
+  postgres:
+    image: postgres:14.4-bullseye
+    ports:
+      - 5432:5432
