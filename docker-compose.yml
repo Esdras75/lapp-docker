@@ -1,13 +1,57 @@
 version: "3.7"
 services:
   ubuntu_apache_php:
-    image: uapp:latest
+    container_name: teste_portal_apache
+    image: ubuntu_apache_php:latest
     ports:
       - 3080:80
+     #- 3043:443
     volumes:
       - ./uapp:/var/www/html/
+    networks:
+      - lapp_network
 
   postgres:
+    container_name: teste_portal_postgres
     image: postgres:14.4-bullseye
+    environment:
+      #POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: TestUFMT123
+    restart: always
     ports:
-      - 5432:5432
+      - 3544:5432
+    volumes:
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/data:/var/lib/postgresql/data
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    networks:
+      - lapp_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "teste@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "TestUFMT123"
+    depends_on:
+      - postgres
+    ports:
+      - 3543:80
+    networks:
+      - lapp_network
+
+  phppgadmin:
+    container_name: teste_portal_phppgadmin
+    image: neimheadh/phppgadmin
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASS: TestUFMT123
+    ports:
+      - 3545:80  
+    networks:
+      - lapp_network
+
+networks:
+  lapp_network:
+    driver: bridge
